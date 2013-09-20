@@ -60,15 +60,11 @@ class Grid
    
    def cell_at(row, col)
        # if row, col is outside the grid bounds, return a dead cell
-       
-       # return Cell.new(self, :dead, row, col) if (row > rows || col > cols)
-       # res = @grid.element(row,col)
-       #if res.is_a?(Cell)
-       #  res
-       #else
-       #  Cell.new(self, :dead, row, col)
-       #end
-       @grid.element(row,col) || Cell.new(self, :dead, row, col)
+       if out_of_bounds?(row, col)
+         Cell.new(self, :dead, row, col)
+       else
+         @grid.element(row, col) 
+       end
    end
    
    def next_turn!
@@ -79,16 +75,16 @@ class Grid
    private
 
    def calculate_next
-     (0..rows).each do |row|
-         (0..cols).each do |col|
+     (0...rows).each do |row|
+         (0...cols).each do |col|
              cell_at(row,col).calculate_next!
          end
      end
    end
 
    def update_state
-     (0..rows).each do |row|
-         (0..cols).each do |col|
+     (0...rows).each do |row|
+         (0...cols).each do |col|
              cell_at(row,col).update_state!
          end
      end
@@ -101,5 +97,12 @@ class Grid
         :dead
       end
    end
-   
+
+   def out_of_bounds?(col, row)
+     bool = false
+     bool = true if (col < 0 || row < 0)
+     bool = true if (col > (@cols - 1) || row > (@rows - 1)) # @cols and @rows are not 0-based, so subtract 1
+     bool
+   end 
+
 end
