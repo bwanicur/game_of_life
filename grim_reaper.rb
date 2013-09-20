@@ -4,6 +4,7 @@ require_relative 'visualizer'
 class GrimReaper
     
     SEED_FILE = ARGV[0]
+    @@count = 1 
     
     def self.start_game!
       @@grid = Grid.new(SEED_FILE)
@@ -18,6 +19,7 @@ class GrimReaper
 
     def self.next_turn
       @@grid.next_turn!
+      @@count +=1
     end
     
 end
