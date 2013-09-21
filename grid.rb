@@ -7,7 +7,6 @@ class Grid
    
    def initialize(seed_file_path)
      seed_data = load_seed(seed_file_path)
-     # @grid = grid_from_seed(seed_data)
      @grid = seed_data
    end
    
@@ -20,7 +19,7 @@ class Grid
        num_line_chars = 0
        char_idx = 0
        line.strip.each_char do |char|
-         my_line << Cell.new(self, alive_or_dead?(char), char_idx, line_idx)
+         my_line << Cell.new(alive_or_dead?(char), char_idx, line_idx)
          num_line_chars += 1
          @num_cols = num_line_chars if num_line_chars > @num_cols
          char_idx += 1
@@ -39,7 +38,7 @@ class Grid
          row_size_diff = @num_cols - row.size
          char_idx = row.size
          row_size_diff.times do
-           row <<  Cell.new(self, :dead, char_idx, line_idx)
+           row <<  Cell.new(:dead, char_idx, line_idx)
            char_idx += 1
          end
        end
@@ -47,43 +46,33 @@ class Grid
      seed_data
    end
    
-   def grid_from_seed(seed_data)
-      Matrix.rows(seed_data)
-   end
-   
-   def cell_at(row, col)
-     # if row, col is outside the grid bounds, return a dead cell
-     if out_of_bounds?(row, col)
-       Cell.new(self, :dead, row, col)
-     else
-       #@grid.element(row, col) 
-       @grid[row][col]
-     end
-   end
-   
-   def next_turn!
-     calculate_next
-     update_state
-   end
-
-   private
-
-   def calculate_next
-     (0...@num_rows).each do |row|
-       (0...@num_cols).each do |col|
-         cell_at(row,col).calculate_next!
+   def calculate_cells_next_states!
+     num_alive_neighbors = 0 
+     @grid.each do |row|
+       row.each do |cell|
+         (-1..1).each do |offset_row|
+           (-1..1).each do |offset_col|
+             num_alive_neighbors =+ 1 if cell_at(cell.row + offset_row, cell.col + offset_col).alive?
+           end
+         end
+         num_alive_neighbors -= 1 if cell.alive?
+         cell.num_alive_neighbors = num_alive_neighbors
+         cell.calculate_next_state!
+         num_alive_neighbors = 0 
        end
      end
    end
 
-   def update_state
-     (0...@num_rows).each do |row|
-       (0...@num_cols).each do |col|
-         cell_at(row,col).update_state!
+   def update_cells_states!
+     @grid.each do |row|
+       row.each do |cell|
+         cell.update_state!
        end
      end
    end
    
+   private 
+
    def alive_or_dead?(char)
     if char == '.'
       :dead
@@ -92,6 +81,15 @@ class Grid
     end
    end
 
+   def cell_at(row, col)
+     # if row, col is outside the grid bounds, return a dead cell
+     if out_of_bounds?(row, col)
+       Cell.new(:dead, row, col)
+     else
+       @grid[row][col]
+     end
+   end
+   
    def out_of_bounds?(col, row)
      bool = false
      bool = true if (col < 0 || row < 0)

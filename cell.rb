@@ -1,18 +1,18 @@
 class Cell
     
-    attr_accessor :state, :next_state, :row, :col, :grid
+    attr_accessor :state, :next_state, :num_alive_neighbors, :row, :col
     
     # state = :alive or :dead
-    def initialize(grid, state, row, col)
-      @grid, @state, @row, @col = grid, state, row, col
-      @next_state = nil
+    def initialize(state, row, col)
+      @state, @row, @col = state, row, col
+      @next_state, @num_alive_neighbors = nil, nil
     end
-    
-    def calculate_next! 
+   
+    def calculate_next_state! 
       if alive?
-        @next_state = [2,3].include?(count_neighbors) ? :alive : :dead
+        @next_state = [2,3].include?(@num_alive_neighbors) ? :alive : :dead
       else
-        @next_state = count_neighbors == 3 ? :alive : :dead
+        @next_state = @num_alive_neighbors == 3 ? :alive : :dead
       end
     end
 
@@ -27,21 +27,8 @@ class Cell
     def update_state!
       @state = @next_state
       @next_state = nil
+      @num_alive_neighbors = nil
     end
     
-    private
-    
-    # count the total number of live neighbors
-    def count_neighbors
-      souls = 0
-      (-1..1).each do |offset_row|
-        (-1..1).each do |offset_col|
-          souls =+ 1 if grid.cell_at(row + offset_row, col + offset_col).alive?
-        end
-      end
-      souls = souls - 1 if alive?
-      souls
-    end
-       
 end
 

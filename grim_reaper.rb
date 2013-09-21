@@ -18,7 +18,8 @@ class GrimReaper
     private
 
     def self.next_turn
-      @@grid.next_turn!
+      @@grid.calculate_cells_next_states!
+      @@grid.update_cells_states!
       @@count +=1
     end
     
