@@ -1,3 +1,4 @@
+require_relative 'seed_file_parser'
 require_relative 'grid'
 require_relative 'visualizer'
 
@@ -7,7 +8,8 @@ class GrimReaper
     @@count = 1 
     
     def self.start_game!
-      @@grid = Grid.new(SEED_FILE)
+      seed_data = SeedFileParser.parse_file(SEED_FILE)
+      @@grid = Grid.new(seed_data)
       while(true)
         Visualizer.ascii(@@grid)
         next_turn
