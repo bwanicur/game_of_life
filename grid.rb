@@ -2,12 +2,11 @@ require_relative 'cell'
 
 class Grid
    
-  attr_accessor :grid, :num_rows, :num_cols
+  attr_accessor :grid, :side_length
    
    def initialize(seed_data)
      @grid = seed_data
-     @num_rows = seed_data.size
-     @num_cols = seed_data[0].size # grid should always be a square, so all rows should have the same length
+     @side_length = seed_data.size # for now, grid should always be a square, so all cols and rows should have the same length
    end
    
    def calculate_cells_next_states!
@@ -57,7 +56,7 @@ class Grid
    def out_of_bounds?(col, row)
      bool = false
      bool = true if (col < 0 || row < 0)
-     bool = true if (col > (@num_cols - 1) || row > (@num_rows - 1)) # @num_cols and @num_rows are not 0-based, so subtract 1
+     bool = true if (col > (@side_length - 1) || row > (@side_length - 1)) # @side_length is not 0-based, so subtract 1
      bool
    end 
 
